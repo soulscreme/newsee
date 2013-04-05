@@ -13,6 +13,7 @@
   <inceptionYear>2010</inceptionYear>
   <properties>
     <scala.version>2.9.1</scala.version>
+    <akka.version>2.1-SNAPSHOT</akka.version>
     <!-- Common plugin settings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
@@ -24,9 +25,9 @@
 
   <repositories>
     <repository>
-      <id>scala-tools.releases</id>
-      <name>Scala-Tools Dependencies Repository for Releases</name>
-      <url>http://scala-tools.org/repo-releases</url>
+      <id>sonatype.snapshots</id>
+      <name>Sonatype Repo</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </repository>
     <repository>
       <id>java.net.maven2</id>
@@ -37,9 +38,9 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>scala-tools.releases</id>
-      <name>Scala-Tools Plugins Repository for Releases</name>
-      <url>http://scala-tools.org/repo-releases</url>
+      <id>sonatype.snapshots</id>
+      <name>Sonatype Repo</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -90,6 +91,12 @@
       <artifactId>scala-compiler</artifactId>
       <version>${scala.version}</version>
       <scope>test</scope>
+    </dependency>
+    <!-- Akka -->
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-actor_2.10</artifactId>
+      <version>${akka.version}</version>
     </dependency>
   </dependencies>
 
