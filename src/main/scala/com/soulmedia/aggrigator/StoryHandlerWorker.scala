@@ -1,3 +1,5 @@
+package com.soulmedia.aggrigator
+
 import akka.actor._
 import akka.routing.RoundRobinRouter
 //import akka.util.duration._
@@ -11,13 +13,15 @@ case class FullStory(topic: String, cleanBody: String) extends StoryMessage
 case class SentenceStory(topic: String, sentences: String[]) extends StoryMessage
 case class ParsedStory(topic: Parse, parsedSentences: List[Parse]) extends StoryMessage
 case class Result(topic: String, topicItems: Array[String], strippedBody: String, bodyItems: Array[String]) extends StoryMessage
+case class FinalResult(result:String) extends StoryMessage
 
 //Worker bee responsible for taking an article, stripping out the HTMl tags and tokeninzing the data
 class StoryTokenWorker extends Actor {
 
 	def receive = {
 		case Process(topic, htmlBody) =>
-            val setenceAnalyzer = system.actorOf(Props[SentenceAnalysisWorker], name = "sentenceAnalyzer")
+            println("StoryTokenWorker: ")
+            val setenceAnalyzer = context.actorOf(Props[SentenceAnalysisWorker], name = "sentenceAnalyzer")
 			
             setenceAnalyzer ! FullStory(stripHtml(topic), stripHtml(htmlBody))
 	}
@@ -26,7 +30,7 @@ class StoryTokenWorker extends Actor {
 
 }
 
-class SentenceAnalysisWorker extends Actor {
+class StoryAnalysisWorker extends Actor {
     def receive = {
         case ParsedStory(topic, parsedSentences) =>
             val actorNoun = getActorNoun(topic)
@@ -88,11 +92,20 @@ class SentenceAnalysisWorker extends Actor {
             
             val sentences = sentenceDetector.sentDetect(cleanBody)
             
-            val sentenceParser = system.actorOf(Props[sentenceParsingWorker], name = "sentenceParser")
+            println(s"SentenceAnalysisWorker: Found ${sentences.length} sentences.")
+            
+            val sentenceParser = context.actorOf(Props[sentenceParsingWorker], name = "sentenceParser")
             
             sentenceParser ! SentenceStory(topic, sentences)
             
         }
+    }
+}
+
+class Listener extends Actor {
+    def receive = {
+        case FinalResult(result) =>
+            println(result)
     }
 }
 
