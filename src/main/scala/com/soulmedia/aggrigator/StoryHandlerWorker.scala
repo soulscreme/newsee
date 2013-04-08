@@ -2,10 +2,17 @@ package com.soulmedia.aggrigator
 
 import akka.actor._
 import akka.routing.RoundRobinRouter
+import scala.io._
 //import akka.util.duration._
 
+<<<<<<< HEAD
 import opennlp.tools.sentdetect._
 import opennlp.tools.parser._
+=======
+object WordType extends Enumeration {
+  val Noun, Verb, Adjective = Value
+}
+>>>>>>> Old change.
 
 sealed trait StoryMessage
 case class Process(topic: String, htmlBody: String) extends StoryMessage
@@ -17,6 +24,17 @@ case class FinalResult(result:String) extends StoryMessage
 
 //Worker bee responsible for taking an article, stripping out the HTMl tags and tokeninzing the data
 class StoryTokenWorker extends Actor {
+<<<<<<< HEAD
+=======
+  val wordMap = Source.fromFile("infl.txt").map( wordDef => (wordDef.substring(0, wordDef.indexOf(" ")),
+    wordDef.substring(wordDef.indexOf(" "), wordDef.indexOf(":")).replaceAll("?", "") match {
+      case "N" => WordType.Noun
+      case "A" => WordType.Adjective
+      case "V" => WordType.Verb
+    })) toMap
+
+  val punctRegex = """!|.|\ ?""".r
+>>>>>>> Old change.
 
 	def receive = {
 		case Process(topic, htmlBody) =>
@@ -28,6 +46,12 @@ class StoryTokenWorker extends Actor {
 
 	def stripHtml(text : String) = { text.replaceAll("""<(?!\/?a(?=>|\s.*>))\/?.*?>""", "") }
 
+<<<<<<< HEAD
+=======
+	def tokenizeTopic(text: String) = { text.split(" ").map(word => word.indexOf("")) }
+	
+	def tokenizeBody(text: String) = { text.split(" ") }
+>>>>>>> Old change.
 }
 
 class StoryAnalysisWorker extends Actor {
