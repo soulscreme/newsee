@@ -36,6 +36,8 @@ class StoryAnalysisWorker extends Actor {
             val actorNoun = getActorNoun(topic)
             val actionVerb = getActionVerb(topic)
             val targetNoun = getTargetNoun(topic)
+            
+            println("StoryAnalysisWorker: Got here!")
     }
     
     def getActorNoun(input: Parse) = {}
@@ -60,15 +62,51 @@ class SentenceParsingWorker extends Actor {
                     if(stringIS) stringIS.close()
                 }
                 
-                val parser = PraserFactory.create(parseModel)
+                val parser = ParserFactory.create(parseModel)
                 
                 val parsedSentence = ParserTool.parseLine(sentence, parser, 1)
                 
+                val debugBuffer = StringBuffer()
+                
+                debugBuffer.append("SentenceParsingWorker: Story structure - \n")
+                
+                parsedSentence[0].show(debugBuffer)
+                
+                println(debugBuffer.toString())
+                
                 parsedSentence[0]
-            })
+            })  
+
+            val topicStructure = {
+                val stringIS = InputStream(ByteArray(topic.getBytes()))
             
+                try {
+                    val parseModel = ParserModel(stringIS)
+                } catch {
+                    case e:IOException =>
+                        println("Could not read story.")
+                } finally {
+                    if(stringIS) stringIS.close()
+                }
+                
+                val parser = ParserFactory.create(parseModel)
+                
+                val parsedSentence = ParserTool.parseLine(topic, parser, 1)
+                
+                val debugBuffer = StringBuffer()
+                
+                debugBuffer.append("SentenceParsingWorker: Topic structure - \n")
+                
+                parsedSentence[0].show(debugBuffer)
+                
+                println(debugBuffer.toString())
+                
+                parsedSentence[0]
+            }
             
+            val storyAnalyzer = context.actorOf(Props[StoryAnalysisWorker], name = "storyAnalyzer")
             
+            storyAnalyzer ! ParsedStory(topicStructure, sentenceStructures)
     }
 }
 
@@ -94,7 +132,7 @@ class SentenceAnalysisWorker extends Actor {
             
             println(s"SentenceAnalysisWorker: Found ${sentences.length} sentences.")
             
-            val sentenceParser = context.actorOf(Props[sentenceParsingWorker], name = "sentenceParser")
+            val sentenceParser = context.actorOf(Props[SentenceParsingWorker], name = "sentenceParser")
             
             sentenceParser ! SentenceStory(topic, sentences)
             
