@@ -103,7 +103,12 @@
       <artifactId>scala-reflect</artifactId>
       <version>${scala.version}</version>
     </dependency>
-
+    <!-- OpenNLP for natural language processing -->
+    <dependency>
+      <groupId>org.apache.opennlp</groupId>
+      <artifactId>opennlp-tools</artifactId>
+      <version>1.5.1-incubating</version>
+    </dependency>
   </dependencies>
 
   <build>
